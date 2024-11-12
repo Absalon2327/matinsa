@@ -24,7 +24,7 @@ Para poder utilizar el proyecto en localhost es necesario clonarlo y tener algun
 Comando para clonar:
 
 ```bash
-git clone https://github.com/mishelrodri/matinsa-frontend.git
+git clone https://github.com/Absalon2327/matinsa.git
 ```
 
 ## 🚀 Ejecución en localhost:
