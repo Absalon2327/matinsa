@@ -1,0 +1,7 @@
+<app-sidebar [status]="status" (buttonClicked)="addToggle()"></app-sidebar>
+<div id="content" [class]="status ? 'content-full' : ''">
+  <app-header (buttonClicked)="addToggle()"></app-header>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

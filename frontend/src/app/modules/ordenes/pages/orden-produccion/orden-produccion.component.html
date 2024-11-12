@@ -1,0 +1,90 @@
+<div class="container-full">
+  <div class="header__page">
+    <div class="d-flex align-items-center">
+      <h1 class="fs-2">Orden de producción</h1>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center justify-content-md-start mt-3">
+    <button routerLink="/ordenes/nuevo" class="btn btn-success">
+      Nueva orden de producción
+    </button>
+  </div>
+
+  <div
+    class="d-flex justify-content-center justify-content-md-end gap-3 flex-wrap mt-3"
+  >
+    <div>
+      <ng-select [(ngModel)]="estado" placeholder="Seleccione un estado">
+        <ng-option value="PENDIENTE">Pendiente</ng-option>
+        <ng-option value="EN_PROCESO">En proceso</ng-option>
+        <ng-option value="FINALIZADA">Finalizada</ng-option>
+      </ng-select>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="form-group">
+        <input type="date" class="form-control" [(ngModel)]="fechaEsperada" />
+      </div>
+    </div>
+    <div>
+      <button (click)="filtrar()" class="btn btn-success">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+    <div>
+      <button (click)="generarReporte()" class="btn btn-danger">
+        Generar Reporte
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-5 tabla">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col"># Orden</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Producto</th>
+          <th scope="col">Fecha entrega</th>
+          <th scope="col">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (listOrdenes.content.length === 0) {
+        <tr>
+          <td colspan="5" class="text-center">
+            {{ isLoading ? "Cargando..." : "No se encontraron resultados" }}
+          </td>
+        </tr>
+        } @for (orden of listOrdenes.content | paginate: { itemsPerPage:
+        itemsPerPage, currentPage: p, totalItems: listOrdenes.totalElements };
+        track $index ;) {
+        <tr>
+          <td scope="col">{{ orden.idOrden }}</td>
+          <td scope="col">{{ orden.nombreCliente }}</td>
+          <td scope="col">{{ orden.nombreProducto }}</td>
+          <td scope="col">{{ orden.fechaEntrega }}</td>
+          <td scope="col">
+            <span
+              class="badge"
+              [class]="{
+                'bg-danger': orden.estado === 'PENDIENTE',
+                'bg-primary': orden.estado === 'EN_PROCESO',
+                'bg-success': orden.estado === 'FINALIZADA'
+              }"
+              >{{ orden.estado | ajustarTexto }}</span
+            >
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <pagination-controls
+    previousLabel="Anterior"
+    nextLabel="Siguiente"
+    (pageChange)="pageChange($event)"
+    class="d-flex justify-content-end"
+  ></pagination-controls>
+</div>

@@ -1,0 +1,86 @@
+<section id="sidebar" [class]="status ? 'hide' : ''">
+  <ul class="side-menu top mt-5 p-1">
+    <!-- class="active" -->
+    <li (click)="addToggle()">
+      <a routerLink="/inicio" routerLinkActive="router-link-active">
+        <i class="bi bi-house-fill"></i>
+        <span class="text">Inicio</span>
+      </a>
+    </li>
+    @if (verificarRol('ADMINISTRADOR') || verificarRol('PRODUCCION')) {
+    <li (click)="addToggle()">
+      <a routerLink="/ordenes" routerLinkActive="router-link-active">
+        <i class="bi bi-box"></i>
+        <span class="text">Ordenes de producción</span>
+      </a>
+    </li>
+    <li (click)="addToggle()">
+      <a routerLink="/linea-produccion" routerLinkActive="router-link-active">
+        <i class="bi bi-layout-text-window-reverse"></i>
+        <span class="text">Líneas de producción</span>
+      </a>
+    </li>
+    } @if (verificarRol('ADMINISTRADOR') || verificarRol('BODEGA')) {
+    <li>
+      <button
+        class="button-collapse"
+        data-bs-toggle="collapse"
+        data-bs-target="#mantenimiento"
+        aria-expanded="false"
+      >
+        <i class="bi bi-gear-fill"></i>
+        <span class="text">Catálogos</span>
+      </button>
+      <div class="collapse" id="mantenimiento">
+        <ul class="list-collapse">
+          @if (verificarRol('ADMINISTRADOR') || verificarRol('BODEGA')) {
+          <li (click)="addToggle()">
+            <a
+              routerLink="/mantenimientos/inventario"
+              routerLinkActive="router-link-active"
+            >
+              <i class="bi bi-boxes"></i>
+              <span class="text-wrap">Inventario</span>
+            </a>
+          </li>
+          } @if (verificarRol('ADMINISTRADOR')) {
+          <li (click)="addToggle()">
+            <a
+              routerLink="/mantenimientos/cliente"
+              routerLinkActive="router-link-active"
+            >
+              <i class="bi bi-people-fill"></i>
+              <span class="text-wrap">Clientes</span>
+            </a>
+          </li>
+          <li (click)="addToggle()">
+            <a
+              routerLink="/mantenimientos/categoria"
+              routerLinkActive="router-link-active"
+            >
+              <i class="bi bi-handbag-fill"></i>
+              <span class="text-wrap">Categorías de producto</span>
+            </a>
+          </li>
+          <li (click)="addToggle()">
+            <a
+              routerLink="/mantenimientos/unidad"
+              routerLinkActive="router-link-active"
+            >
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span class="text-wrap">Unidades</span>
+            </a>
+          </li>
+          }
+        </ul>
+      </div>
+    </li>
+    }
+    <li>
+      <a (click)="cerrarSesion()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="text">Cerrar sesión</span>
+      </a>
+    </li>
+  </ul>
+</section>

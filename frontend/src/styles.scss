@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+@import "styles/bootswatch-theme.css";
+@import "styles/select-theme.css";
+:root {
+  //rgba(52, 89, 232, 1)
+  --color-primary: #e0f7f4;
+  --color-primary-hover: #b2e5df;
+  --arrow: #2b2a2a;
+  --blue: #1d7373;
+  --navbar: #b2e5df;
+  --white: #fff;
+  --light: #f0f4f7;
+  --black: #2b2a2a;
+}
+
+body {
+  font-family: system-ui;
+  // font-size: 18px;
+}
+
+
+.tabla{
+  height: 430px;
+}
+
+.btn-transparent{
+  border: none;
+  background: transparent;
+}
+

@@ -1,0 +1,242 @@
+<div class="container-full">
+  <div class="header__page">
+    <div class="d-flex align-items-center">
+      <h1 class="fs-2">Inventario</h1>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center justify-content-md-start mt-3">
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#modalProducto"
+      class="btn btn-success"
+      (click)="abrirModal()"
+    >
+      Nuevo producto
+    </button>
+  </div>
+  <div
+    class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 mt-3"
+  >
+    <div>
+      <ng-select
+        [(ngModel)]="tipo"
+        [clearable]="false"
+        placeholder="Seleccione un tipo de producto"
+      >
+        <ng-option value="1">Producto terminado</ng-option>
+        <ng-option value="2">Materia prima</ng-option>
+      </ng-select>
+    </div>
+    <div>
+      <button (click)="filtrar()" class="btn btn-success">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+    <div>
+      <button (click)="generarReporte()" class="btn btn-danger">
+        Generar Reporte
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-5 tabla">
+    <table class="table table-hover">
+      <thead>
+        <tr class="text-center">
+          <th scope="col">Código</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Unidad</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (listProductos.content.length === 0) {
+        <tr>
+          <td colspan="7" class="text-center">
+            {{ isLoading ? "Cargando..." : "No se encontraron resultados" }}
+          </td>
+        </tr>
+        } @for (producto of listProductos.content | paginate: { itemsPerPage:
+        itemsPerPage, currentPage: p, totalItems: listProductos.totalElements };
+        track $index ;) {
+        <tr class="text-center">
+          <td scope="col">{{ producto.codigo }}</td>
+          <td scope="col">{{ producto.nombreProducto }}</td>
+          <td scope="col">{{ producto.descripcion }}</td>
+          <td scope="col">{{ producto.unidad }}</td>
+          <td scope="col">{{ producto.cantidad }}</td>
+          <td scope="col">{{ producto.estado }}</td>
+
+          <td scope="col">
+            <button
+              (click)="eliminar(producto.idProducto)"
+              class="btn-transparent text-danger"
+            >
+              <i class="bi bi-trash fs-4"></i>
+            </button>
+
+            <button
+              (click)="editar(producto)"
+              data-bs-toggle="modal"
+              data-bs-target="#modalProducto"
+              class="btn-transparent text-success"
+            >
+              <i class="bi bi-pencil-square fs-4"></i>
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <pagination-controls
+    previousLabel="Anterior"
+    nextLabel="Siguiente"
+    (pageChange)="pageChange($event)"
+    class="d-flex justify-content-end"
+  ></pagination-controls>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalProducto"
+  tabindex="-1"
+  aria-labelledby="modalProductoLabel"
+  aria-hidden="true"
+  #modalProducto
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalProductoLabel">Nuevo Producto</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          (ngSubmit)="guardarProducto()"
+          [formGroup]="formulario"
+          id="productoForm"
+          name="productoForm"
+        >
+          @if (!isEditar) {
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">Nombre Producto</label>
+            <input
+              type="text"
+              formControlName="nombreProducto"
+              placeholder="Nombre producto"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+          }
+
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">Descripción</label>
+            <input
+              type="textarea"
+              formControlName="descripcion"
+              placeholder="Descripcion"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+
+          @if (!isEditar) {
+          <div>
+            <label class="form-label">Tipo Producto</label>
+            <ng-select
+              formControlName="tipoProducto"
+              class="mb-3"
+              placeholder="Seleccione un tipo de producto"
+            >
+              <ng-option value="1">Producto terminado</ng-option>
+              <ng-option value="2">Materia prima</ng-option>
+            </ng-select>
+          </div>
+          } @if (!isEditar) {
+          <div>
+            <label class="form-label">Unidad</label>
+            <ng-select
+              formControlName="unidad"
+              class="mb-3"
+              placeholder="Seleccione una unidad"
+            >
+              @for (item of listUnidades; track $index) {
+              <ng-option value="{{ item.idUnidad }}">{{
+                item.nombre
+              }}</ng-option>
+
+              } >
+            </ng-select>
+          </div>
+
+          @if (formulario.get('tipoProducto')?.value==='1') {
+          <div>
+            <label class="form-label">Categoría producto</label>
+            <ng-select
+              formControlName="categoriaProducto"
+              class="mb-3"
+              placeholder="Seleccione una categoría"
+            >
+              @for (item of listCategorias; track $index) {
+              <ng-option value="{{ item.idCategoria }}">{{
+                item.nombre
+              }}</ng-option>
+
+              }
+            </ng-select>
+          </div>
+          } }
+
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input
+              formControlName="cantidad"
+              type="number"
+              placeholder="Cantidad"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+          @if (isEditar) {
+          <div class="form-check form-switch">
+            <input
+              formControlName="estado"
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="estado"
+              checked
+            />
+            <label class="form-check-label" for="estado">Activo</label>
+          </div>
+          }
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          #cerrar
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button form="productoForm" type="submit" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

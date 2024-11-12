@@ -1,0 +1,127 @@
+<div class="container-full">
+  <div class="header__page">
+    <div class="d-flex align-items-center">
+      <h1 class="fs-2">Unidades</h1>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center justify-content-md-start mt-3">
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#modalUnidad"
+      class="btn btn-success"
+      (click)="abrirModal()"
+    >
+      Nueva Unidad
+    </button>
+  </div>
+
+  <div class="table-responsive mt-5 tabla">
+    <table class="table table-hover">
+      <thead>
+        <tr class="text-center">
+          <th scope="col">ID</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (listUnidades.content.length === 0) {
+        <tr>
+          <td colspan="7" class="text-center">
+            {{ isLoading ? "Cargando..." : "No se encontraron resultados" }}
+          </td>
+        </tr>
+        } @for (unidad of listUnidades.content | paginate: { itemsPerPage:
+        itemsPerPage, currentPage: p, totalItems: listUnidades.totalElements };
+        track $index ;) {
+        <tr class="text-center">
+          <td scope="col">{{ unidad.idUnidad }}</td>
+          <td scope="col">{{ unidad.nombre }}</td>
+
+          <td scope="col">
+            <button
+              (click)="eliminar(unidad.idUnidad)"
+              class="btn-transparent text-danger"
+            >
+              <i class="bi bi-trash fs-4"></i>
+            </button>
+
+            <button
+              (click)="editar(unidad)"
+              data-bs-toggle="modal"
+              data-bs-target="#modalUnidad"
+              class="btn-transparent text-success"
+            >
+              <i class="bi bi-pencil-square fs-4"></i>
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <pagination-controls
+    previousLabel="Anterior"
+    nextLabel="Siguiente"
+    (pageChange)="pageChange($event)"
+    class="d-flex justify-content-end"
+  ></pagination-controls>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalUnidad"
+  tabindex="-1"
+  aria-labelledby="modalUnidad"
+  aria-hidden="true"
+  #modalUnidad
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalUnidad">Nueva Unidad</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          (ngSubmit)="guardarProducto()"
+          [formGroup]="formulario"
+          id="unidadForm"
+          name="unidadForm"
+        >
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input
+              formControlName="nombre"
+              type="text"
+              min="1"
+              placeholder="Nombre unidad"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          #cerrar
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button form="unidadForm" type="submit" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

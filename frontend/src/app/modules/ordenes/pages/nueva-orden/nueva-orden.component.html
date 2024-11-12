@@ -1,0 +1,207 @@
+<div class="container-full">
+  <div class="header__page">
+    <div class="d-flex align-items-center">
+      <h1 class="fs-2">Nueva Orden de Producción</h1>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end">
+    <button
+      type="button"
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#modalDetalle"
+      (click)="abrirModalDetalle()"
+    >
+      Agregar Nuevo detalle
+    </button>
+  </div>
+  <div class="orden__container mt-5">
+    <section>
+      <p class="fw-semibold">Datos de la orden</p>
+
+      <form
+        id="orden"
+        name="orden"
+        (submit)="guardarOrden()"
+        [formGroup]="formulario"
+      >
+        <ng-select
+          formControlName="cliente"
+          class="mb-3"
+          placeholder="Seleccione un cliente"
+        >
+          @for (item of listClientes; track $index) {
+          <ng-option value="{{ item.idCliente }}">{{ item.nombre }}</ng-option>
+
+          }
+        </ng-select>
+
+        <div bis_skin_checked="1" class="mb-3">
+          <input
+            formControlName="fechaEntrega"
+            type="date"
+            class="form-control"
+            autocomplete="off"
+          />
+        </div>
+
+        <ng-select
+          formControlName="tipoProducto"
+          class="mb-3"
+          (change)="filtrarProductos()"
+          placeholder="Seleccione un tipo de producto"
+        >
+          @for (item of listCategorias; track $index) {
+          <ng-option value="{{ item.idCategoria }}">{{
+            item.nombre
+          }}</ng-option>
+
+          }
+        </ng-select>
+
+        <ng-select
+          formControlName="producto"
+          class="mb-3"
+          placeholder="Seleccione un producto"
+        >
+          @for (item of listProductos; track $index) {
+          <ng-option value="{{ item.idProducto }}">{{
+            item.nombreProducto
+          }}</ng-option>
+
+          }
+        </ng-select>
+        <div bis_skin_checked="1" class="mb-3">
+          <input
+            formControlName="cantidad"
+            type="number"
+            class="form-control"
+            placeholder="Cantidad"
+            autocomplete="off"
+          />
+        </div>
+      </form>
+    </section>
+    <section>
+      <p class="fw-semibold">Detalles de materia prima</p>
+
+      <div class="table-responsive mt-2 table-height">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col"># ID</th>
+              <th scope="col">MATERIA</th>
+              <th scope="col">CANTIDAD POR UTILIZAR</th>
+              <th scope="col">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (detallesOrdenArray.length === 0) {
+            <tr>
+              <td colspan="4" class="text-center">
+                No se encontraron resultados
+              </td>
+            </tr>
+            } @for (detalle of detallesOrdenArray; track $index) {
+            <tr>
+              <td scope="col">{{ detalle.id ? detalle.id : "1" }}</td>
+              <td scope="col">{{ detalle.productoNombre }}</td>
+              <td scope="col">{{ detalle.cantidad }}</td>
+              <td scope="col">
+                <button
+                  (click)="eliminarDetalle(detalle)"
+                  class="btn-transparent text-danger"
+                >
+                  <i class="bi bi-trash fs-4"></i>
+                </button>
+                <button
+                  (click)="editarDetalle(detalle)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalDetalle"
+                  class="btn-transparent text-success"
+                >
+                  <i class="bi bi-pencil-square fs-4"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <div class="d-flex justify-content-center mt-5">
+    <button form="orden" type="submit" class="btn btn-danger">
+      Finalizar Orden
+    </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalDetalle"
+  tabindex="-1"
+  aria-labelledby="modalDetalleLabel"
+  aria-hidden="true"
+  #modalDetalle
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalDetalleLabel">Modal title</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          id="formDetalle"
+          name="formDetalle"
+          (ngSubmit)="guardarDetalle()"
+          [formGroup]="formularioDetalle"
+        >
+          <ng-select
+            (change)="obtenerNombreMateriaPrima()"
+            formControlName="producto"
+            class="mb-3"
+            placeholder="Seleccione una materia prima"
+          >
+            @for (item of listMateriaPrima; track $index) {
+            <ng-option value="{{ item.idProducto }}"
+              >{{ item.nombreProducto }} - {{ item.unidad.nombre }}</ng-option
+            >
+
+            }
+          </ng-select>
+          <div bis_skin_checked="1" class="mb-3">
+            <input
+              formControlName="cantidad"
+              type="number"
+              class="form-control"
+              placeholder="Cantidad a utilizar"
+              autocomplete="off"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          #cerrar
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button form="formDetalle" type="submit" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

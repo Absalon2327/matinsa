@@ -1,0 +1,12 @@
+.background-image {
+  background-image: url('/assets/images/dash.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: auto; /* Ajusta la altura según sea necesario */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

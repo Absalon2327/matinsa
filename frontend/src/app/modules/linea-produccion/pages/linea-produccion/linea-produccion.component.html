@@ -1,0 +1,255 @@
+<div class="container-full">
+  <div class="header__page">
+    <div class="d-flex align-items-center">
+      <h1 class="fs-2">Líneas de producción</h1>
+    </div>
+  </div>
+
+  <div class="d-flex mt-3">
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#modalLineaProduccion"
+      class="btn btn-success"
+      (click)="abrirModal()"
+    >
+      Nueva línea de producción
+    </button>
+  </div>
+
+  <div class="table-responsive mt-5 tabla">
+    <table class="table table-hover">
+      <thead>
+        <tr class="text-center">
+          <th scope="col"># Orden</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Línea de producción</th>
+          <th scope="col">Fecha de ingreso</th>
+          <th scope="col">Fecha finalización</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (listLineasProduccion.content.length === 0) {
+        <tr>
+          <td colspan="7" class="text-center">
+            {{ isLoading ? "Cargando..." : "No se encontraron resultados" }}
+          </td>
+        </tr>
+        } @for (linea of listLineasProduccion.content | paginate: {
+        itemsPerPage: itemsPerPage, currentPage: p, totalItems:
+        listLineasProduccion.totalElements }; track $index ;) {
+        <tr class="text-center">
+          <td scope="col">{{ linea.ordenProduccion.idOrden }}</td>
+          <td scope="col">{{ linea.ordenProduccion.cliente.nombre }}</td>
+          <td scope="col">
+            {{ linea.lineaProduccion === 1 ? "ROPA" : "GORRA" }}
+          </td>
+          <td scope="col">{{ linea.fechaIngreso | fecha }}</td>
+          <td scope="col">
+            {{
+              linea.fechaFinalizacion ? (linea.fechaFinalizacion | fecha) : "-"
+            }}
+          </td>
+          <td scope="col">
+            <span
+              class="badge"
+              [class]="
+                linea.ordenProduccion.estado === 'EN_PROCESO'
+                  ? 'bg-primary'
+                  : 'bg-success'
+              "
+              >{{ linea.ordenProduccion.estado | ajustarTexto }}</span
+            >
+          </td>
+          <td scope="col">
+            @if(linea.ordenProduccion.estado === 'EN_PROCESO'){
+            <button
+              (click)="abrirFinalizarModal(linea.idLineaProduccion)"
+              data-bs-toggle="modal"
+              data-bs-target="#modalFinalizacion"
+              class="btn btn-danger"
+            >
+              Finalizar Orden
+            </button>
+            } @else{ {{ "-" }} }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <pagination-controls
+    previousLabel="Anterior"
+    nextLabel="Siguiente"
+    (pageChange)="pageChange($event)"
+    class="d-flex justify-content-end"
+  ></pagination-controls>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalLineaProduccion"
+  tabindex="-1"
+  aria-labelledby="modalLineaProduccionLabel"
+  aria-hidden="true"
+  #modalLineaProduccion
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalLineaProduccionLabel">
+          Nueva línea de producción
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          id="lineaProduccion"
+          name="lineaProduccion"
+          (ngSubmit)="guardarLinea()"
+          [formGroup]="formulario"
+        >
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">fecha de ingreso</label>
+            <input
+              type="date"
+              formControlName="fechaIngreso"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+
+          <ng-select
+            formControlName="ordenProduccion"
+            (change)="obtenerInfoOrden()"
+            class="mb-3"
+            placeholder="Seleccione una orden de producción"
+          >
+            @for (item of listOrdenes; track $index) {
+            <ng-option value="{{ item.idOrden }}">
+              {{ "# " + item.idOrden }} - {{ item.cliente.nombre }}</ng-option
+            >
+
+            }
+          </ng-select>
+          <div class="d-flex flex-column gap-2 mb-3 px-3">
+            <span class="fw-bolder text-danger">Información de la orden</span>
+            <span
+              ><span class="fw-semibold">N° Orden: </span
+              >{{ ordenSeleccionada ? ordenSeleccionada.idOrden : "" }}
+            </span>
+            <span
+              ><span class="fw-semibold">Cliente: </span
+              >{{
+                ordenSeleccionada ? ordenSeleccionada.cliente.nombre : ""
+              }}</span
+            >
+            <span
+              ><span class="fw-semibold">Cliente: </span
+              >{{
+                ordenSeleccionada
+                  ? ordenSeleccionada.producto.nombreProducto
+                  : ""
+              }}</span
+            >
+            <span
+              ><span class="fw-semibold">Fecha entrega: </span
+              >{{
+                ordenSeleccionada
+                  ? (ordenSeleccionada.fechaEntrega | fecha)
+                  : ""
+              }}</span
+            >
+          </div>
+
+          <ng-select
+            formControlName="lineaProduccion"
+            class="mb-3"
+            placeholder="Seleccione una línea de producción"
+          >
+            <ng-option value="1">Ropa</ng-option>
+            <ng-option value="2">Gorra</ng-option>
+            >
+          </ng-select>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          #cerrar
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button form="lineaProduccion" type="submit" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalFinalizacion"
+  tabindex="-1"
+  aria-labelledby="modalFinalizacionLabel"
+  aria-hidden="true"
+  #modalFinalizacion
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalFinalizacionLabel">
+          Finalizar línea de producción
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          id="finalizacion"
+          name="finalizacion"
+          (ngSubmit)="finalizar()"
+          [formGroup]="finzalizarOrden"
+        >
+          <div bis_skin_checked="1" class="mb-3">
+            <label class="form-label">fecha de finalización</label>
+            <input
+              type="date"
+              formControlName="fechaFinalizacion"
+              class="form-control"
+              autocomplete="off"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          #segundoCerrar
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button form="finalizacion" type="submit" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
